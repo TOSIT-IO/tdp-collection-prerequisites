@@ -1,0 +1,34 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- hosts: ca_host
+  tasks:
+  - import_role:
+      name: tosit.tdp_prerequisites.certificates
+      tasks_from: generate_certificate_authority
+
+- hosts: all
+  tasks:
+  - import_role:
+      name: tosit.tdp_prerequisites.certificates
+      tasks_from: generate_host_csr
+    vars:
+      hostname: "{{ inventory_hostname }}"
+
+- hosts: ca_host
+  tasks:
+  - include_role:
+      name: tosit.tdp_prerequisites.certificates
+      tasks_from: sign_certificates
+    with_inventory_hostnames: all
+    loop_control:
+      loop_var: hostname
+
+- hosts: all
+  tasks:
+  - import_role:
+      name: tosit.tdp_prerequisites.certificates
+      tasks_from: copy_to_host
+    vars:
+      hostname: "{{ inventory_hostname }}"
