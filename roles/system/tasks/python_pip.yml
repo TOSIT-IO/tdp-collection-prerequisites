@@ -1,0 +1,22 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Upgrade pip3
+  pip:
+    name:
+      - pip
+    state: latest
+    executable: pip3
+  environment: "{{ proxy_env }}"
+
+- name: Install numpy, pandas and pyarrow
+  pip:
+    name:
+      - numpy~=1.19
+      - pandas~=1.0
+      - pyarrow~=4.0
+      - py4j~=0.10.9
+    state: latest
+    executable: pip3
+  environment: "{{ proxy_env }}"

@@ -1,0 +1,9 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Set JAVA_HOME
+  lineinfile:
+    path: /etc/environment
+    regexp: "^JAVA_HOME="
+    line: JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk
