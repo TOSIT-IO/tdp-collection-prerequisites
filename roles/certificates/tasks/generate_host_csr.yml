@@ -1,0 +1,33 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Generate host's private key
+  openssl_privatekey:
+    path: "{{ certificates_path }}/{{ certificates_cert_filename }}.key"
+    size: 4096
+
+- name: Generate host's certificate signing request
+  openssl_csr:
+    path: "{{ certificates_path }}/{{ certificates_cert_filename }}.csr"
+    privatekey_path: "{{ certificates_path }}/{{ certificates_cert_filename }}.key"
+    basic_constraints:
+      - 'CA:FALSE'
+    common_name: "{{ certificates_cert_common_name }}"
+    country_name: "{{ certificates_country_name }}"
+    organization_name: "{{ certificates_organization_name }}"
+    key_usage: "{{ certificates_cert_key_usage }}"
+    subject_alt_name: "{{ certificates_cert_subject_alt_names }} "
+
+- name: Ensure certificates storing folder exists
+  delegate_to: localhost
+  become: no
+  file:
+    path: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs"
+    state: directory
+
+- name: Fetch host's certificate signing request
+  fetch:
+    src: "{{ certificates_path }}/{{ certificates_cert_filename }}.csr"
+    dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
+    flat: yes

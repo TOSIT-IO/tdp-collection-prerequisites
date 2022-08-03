@@ -1,0 +1,28 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+certificates_path: /etc/ssl/certs
+certificates_country_name: fr
+certificates_organization_name: TDP
+certificates_cluster_name: tdp_getting_started
+
+certificates_ca_filename: tdp_ca
+certificates_cert_filename: "{{ hostname }}.{{ domain }}"
+
+certificates_ca_common_name: tdp.local
+certificates_cert_common_name: "{{ hostname }}.{{ domain }}"
+
+certificates_ca_key_usage:
+  - digitalSignature
+  - keyEncipherment
+  - keyCertSign
+  - cRLSign
+certificates_cert_key_usage:
+  - digitalSignature
+  - keyEncipherment
+  - dataEncipherment
+
+certificates_cert_subject_alt_names:
+  - "DNS:{{ hostname }}.{{ domain }}"
+  - "IP:{{ ip }}"
