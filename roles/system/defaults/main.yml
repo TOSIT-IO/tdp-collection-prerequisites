@@ -9,3 +9,22 @@ proxy_env:
   HTTPS_PROXY: "{{ https_proxy | default ('') }}"
   no_proxy: "{{ no_proxy | default ('') }}"
   NO_PROXY: "{{ no_proxy | default ('') }}"
+
+default_packages:
+  common:
+    - vim
+    - java-1.8.0-openjdk
+    - wget
+    - curl
+    - unzip
+    - nc
+    - expect
+    - python3
+    - python3-pip
+    - python3-setuptools
+  legacy: # centos 7 and below
+    # Installing python2-setuptools required by the Ansible pip module
+    - python2-setuptools
+    - python2-cryptography
+  modern: # centos 8 and above
+    - python3-cryptography
