@@ -1,0 +1,24 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Enable openldap-servers repo
+  ini_file:
+    path: "{{ repos[ansible_distribution_major_version]['path'] }}"
+    section: "{{ repos[ansible_distribution_major_version]['section'] }}"
+    option: enabled
+    value: "1"
+    no_extra_spaces: yes
+  vars:
+    repos:
+      '8':
+        path: /etc/yum.repos.d/Rocky-PowerTools.repo
+        section: powertools
+      '9':
+        path: /etc/yum.repos.d/rocky-extras.repo
+        section: plus
+  when:
+    - openldap_servers_repo_enabled
+    - ansible_distribution == 'Rocky'
+    - ansible_distribution_major_version == '8' or ansible_distribution_major_version == '9'
+  notify: dnf makecache

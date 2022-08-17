@@ -1,0 +1,28 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: dnf makecache
+  command: dnf makecache
+  args:
+    warn: False
+
+- name: restart slapd
+  service:
+    name: slapd
+    state: restarted
+
+- name: restart krb5kdc
+  service:
+    name: krb5kdc
+    state: restarted
+
+- name: restart kadmin
+  service:
+    name: kadmin
+    state: restarted
+
+- name: restart sssd
+  service:
+    name: sssd
+    state: restarted

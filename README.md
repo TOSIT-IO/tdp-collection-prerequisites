@@ -1,5 +1,13 @@
 # TDP collection prerequisites
 
+## Supported distribution
+
+- Centos 7
+- Rocky 8.6+, 9
+- Alma[^alma] 8, 9
+
+[^alma]: Alma does not provide `openldap-servers` package so it is not supported for host in `[kdc]` Ansible group.
+
 ## Topology
 
 The `topology.ini` file includes Ansible groups to work with playbooks inside this collection which can be added to your Ansible inventory configuration.
@@ -27,6 +35,8 @@ Configure `yum`/`dnf` global http proxy and install needed `yum`/`dnf` packages.
 
 Configure `JAVA_HOME` variable inside `/etc/environment`.
 
+Disable `firewalld`.
+
 Install needed Python packages with `pip3` for PySpark.
 
 ```bash
@@ -52,3 +62,17 @@ ansible-playbook playbooks/certificates.yml
 ```
 
 _The certificates will also be downloaded to the `roles/certificates/files/tdp_getting_started_certs` local project folder._
+
+## LDAP and Kerberos
+
+Launches a LDAP server and KDC on the `[kdc]` group hosts.
+
+On each host installs Kerberos clients and enable SSSD LDAP authentification.
+
+Create `ldap_groups` and `ldap_users` specified. For each users, a Kerberos principal is created and a keytab is generated in `/home/<username>/<username>.keytab` on  the`[users_keytab]` group hosts.
+
+```
+ansible-playbook playbooks/ldap_kerberos.yml
+```
+
+_After this, you can log in as the Kerberos admin from any VM with the command `kinit admin/admin` and the password `admin123`. When using a user unix account on `[users_keytab]` group hosts, you can log in with `kinit -ki` which will use the keytab inside the home directory._

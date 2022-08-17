@@ -5,3 +5,4 @@
 - import_playbook: system.yml
 - import_playbook: chrony.yml
 - import_playbook: certificates.yml
+- import_playbook: ldap_kerberos.yml

@@ -1,0 +1,23 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- hosts: kdc
+  tasks:
+    - import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+
+- hosts: all
+  tasks:
+    - import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: sssd.yml
+    - import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: install_kerberos_client.yml
+
+- hosts: users_keytab
+  tasks:
+    - import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: create_users_keytab.yml
