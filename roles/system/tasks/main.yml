@@ -5,4 +5,5 @@
 - import_tasks: hosts.yml
 - import_tasks: packages.yml
 - import_tasks: java_home.yml
+- import_tasks: disable_firewalld.yml
 - import_tasks: python_pip.yml
