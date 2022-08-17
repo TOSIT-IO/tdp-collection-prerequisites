@@ -1,0 +1,34 @@
+includedir /etc/krb5.conf.d/
+
+[libdefaults]
+  renew_lifetime = 7d
+
+[realms]
+  {{ realm }} = {
+    database_module = openldap_ldapconf
+  }
+
+[dbdefaults]
+  ldap_kerberos_container_dn = cn=krbContainer,{{ ldap_suffix }}
+
+[dbmodules]
+  openldap_ldapconf = {
+    db_library = kldap
+
+    # if either of these is false, then the ldap_kdc_dn needs to
+    # have write access
+    disable_last_success = true
+    disable_lockout  = true
+
+    # this object needs to have read rights on
+    # the realm container, principal container and realm sub-trees
+    ldap_kdc_dn = {{ ldap_admin_dn }}
+
+    # this object needs to have read and write rights on
+    # the realm container, principal container and realm sub-trees
+    ldap_kadmind_dn = {{ ldap_admin_dn }}
+
+    ldap_service_password_file = {{ ldap_password_file }}
+    ldap_servers = ldapi:///
+    ldap_conns_per_server = 5
+  }

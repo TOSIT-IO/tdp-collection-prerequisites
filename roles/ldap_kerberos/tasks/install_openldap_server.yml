@@ -1,0 +1,85 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Delete slapd.d
+  file:
+    path: /etc/openldap/slapd.d
+    state: absent
+
+- name: Check Kerberos version
+  command: klist -V
+  register: reg_klist
+  changed_when: no
+
+- name: Copy kerberos schema to ldap folder
+  copy:
+    src: "/usr/share/doc/krb5-server-ldap{{ kerberos_schema_version }}/kerberos.schema"
+    dest: /etc/openldap/schema
+    remote_src: yes
+  vars:
+    kerberos_schema_version: "{{ ( (ansible_distribution_major_version | int) < 8) | ternary('-' + reg_klist.stdout.split(' ')[-1],'') }}"
+
+- name: Configure slapd.conf
+  template:
+    src: slapd.conf.j2
+    dest: /etc/openldap/slapd.conf
+  notify: restart slapd
+
+- name: Start and enable slapd
+  service:
+    name: slapd
+    state: started
+    enabled: yes
+
+- name: Create LDAP tree
+  shell: |
+    ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
+    {{ item }}
+    EOF
+  register: reg_ldapadd
+  failed_when:
+    - reg_ldapadd is failed
+    - reg_ldapadd.rc != 68
+  changed_when: reg_ldapadd.rc != 68
+  loop:
+    - "{{ ldap_base_tree_ldif }}"
+    - "{{ ldap_users_tree_ldif }}"
+    - "{{ ldap_groups_tree_ldif }}"
+
+- name: Create LDAP groups
+  shell: |
+    ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
+    {{ ldap_group_ldif }}
+    EOF
+  register: reg_ldapadd
+  failed_when:
+    - reg_ldapadd is failed
+    - reg_ldapadd.rc != 68
+  changed_when: reg_ldapadd.rc != 68
+  loop: "{{ ldap_groups }}"
+  vars:
+    group: "{{ item.group }}"
+    gid: "{{ item.gid }}"
+
+- name: Create LDAP users
+  shell: |
+    ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
+    {{ ldap_user_ldif }}
+    EOF
+  register: reg_ldapadd
+  failed_when:
+    - reg_ldapadd is failed
+    - reg_ldapadd.rc != 68
+  changed_when: reg_ldapadd.rc != 68
+  loop: "{{ ldap_users }}"
+  loop_control:
+    label:
+      user: "{{ item.user }}"
+      uid: "{{ item.uid }}"
+      gid: "{{ item.gid }}"
+  vars:
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+    uid: "{{ item.uid }}"
+    gid: "{{ item.gid }}"

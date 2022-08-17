@@ -1,0 +1,19 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Create users keytab
+  become_user: "{{ item.user }}"
+  shell: echo '{{ create_keytab_command }}' | ktutil
+  args:
+    creates: "/home/{{ item.user }}/{{ item.user }}.keytab"
+  vars:
+    create_keytab_command: |
+      add_entry -password -p {{ item.user }}@{{ realm }} -k 1 -e aes256-cts-hmac-sha1-96
+      {{ item.password }}
+      add_entry -password -p {{ item.user }}@{{ realm }} -k 1 -e aes128-cts-hmac-sha1-96
+      {{ item.password }}
+      write_kt /home/{{ item.user }}/{{ item.user }}.keytab
+  loop: "{{ ldap_users }}"
+  loop_control:
+    label: "{{ item.user }}"

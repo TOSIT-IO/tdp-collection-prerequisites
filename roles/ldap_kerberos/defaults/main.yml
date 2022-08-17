@@ -1,0 +1,86 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Enable "powertools" repo for Rocky 8 and "plus" for Rocky 9
+openldap_servers_repo_enabled: yes
+
+ldapdb_dir: /var/lib/ldap
+
+ldap_rootpw: secret
+
+ldap_suffix: "c=io"
+ldap_basedn: "ou=tdp,o=tosit,{{ ldap_suffix }}"
+ldap_rootdn: "cn=Manager,{{ ldap_basedn }}"
+ldap_users_base: "ou=users,{{ ldap_suffix }}"
+ldap_groups_base: "ou=groups,{{ ldap_suffix }}"
+
+ldap_base_tree_ldif: |
+  dn: c=io
+  c: io
+  objectClass: country
+ldap_users_tree_ldif: |
+  dn: {{ ldap_users_base }}
+  objectClass: organizationalUnit
+  ou: users
+ldap_groups_tree_ldif: |
+  dn: {{ ldap_groups_base }}
+  objectClass: organizationalUnit
+  ou: groups
+ldap_user_ldif: |
+  dn: uid={{ user }},{{ ldap_users_base }}
+  uid: {{ user }}
+  objectClass: posixAccount
+  objectClass: inetOrgPerson
+  cn: "{{ user_cn | default(user) }}"
+  sn: "{{ user_sn | default(user) }}"
+  uidNumber: {{ uid }}
+  gidNumber: {{ gid }}
+  homeDirectory: /home/{{ user }}
+  loginShell: /bin/bash
+  userPassword: {{ password }}
+ldap_group_ldif: |
+  dn: cn={{ group }},{{ ldap_groups_base }}
+  objectClass: top
+  objectClass: posixGroup
+  cn: {{ group }}
+  gidNumber: {{ gid }}
+
+ldap_groups: []
+  # - group: usera
+  #   gid: 1101
+  # - group: userb
+  #   gid: 1102
+
+ldap_users: []
+  # - user: usera
+  #   password: secreta
+  #   uid: 1101
+  #   gid: 1101
+  # - user: userb
+  #   password: secretb
+  #   uid: 1102
+  #   gid: 1102
+
+# client
+ldap_server: "{{ groups['kdc'][0] }}.{{ domain }}"
+domain: tdp
+realm: REALM.TDP
+
+ldap_admin_dn: "{{ ldap_rootdn }}"
+ldap_admin_dn_password: "{{ ldap_rootpw }}"
+
+#TODO create dedicated accounts
+kdc_service_dn: "{{ ldap_admin_dn }}"
+kdc_service_dn_password: "{{ ldap_admin_dn_password }}"
+kadmin_service_dn: "{{ ldap_admin_dn }}"
+kadmin_service_dn_password: "{{ ldap_admin_dn_password }}"
+ldap_password_file: /var/kerberos/krb5kdc/service.keyfile
+
+kerberos_db_master_key: master123
+
+kerberos_admin_principal: "admin/admin@{{ realm }}"
+kerberos_admin_password: admin123
+kerberos_kadmin_admin_template: "*/admin@{{ realm }}"
+
+kerberos_server: "{{ groups['kdc'][0] }}.{{ domain }}"
