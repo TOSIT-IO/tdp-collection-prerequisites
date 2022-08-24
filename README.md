@@ -71,6 +71,12 @@ On each host installs Kerberos clients and enable SSSD LDAP authentification.
 
 Create `ldap_groups` and `ldap_users` specified. For each users, a Kerberos principal is created and a keytab is generated in `/home/<username>/<username>.keytab` on  the`[users_keytab]` group hosts.
 
+You can configure ticket renewal lifetime:
+- `kerberos_renew_lifetime`: the default renew lifetime asked for during a kinit, templated in krb5.conf
+- `kerberos_max_renewable_life`: the default max renewable life parameter of any principal created, templated in kdc.conf
+
+Note that some tools may malfunction if `kerberos_renew_lifetime` > `kerberos_max_renewable_life`.
+
 ```
 ansible-playbook playbooks/ldap_kerberos.yml
 ```
