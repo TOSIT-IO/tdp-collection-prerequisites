@@ -83,4 +83,7 @@ kerberos_admin_principal: "admin/admin@{{ realm }}"
 kerberos_admin_password: admin123
 kerberos_kadmin_admin_template: "*/admin@{{ realm }}"
 
+kerberos_renew_lifetime: "7d 0h 0m 0s"
+kerberos_max_renewable_life: "7d 0h 0m 0s"
+
 kerberos_server: "{{ groups['kdc'][0] }}.{{ domain }}"

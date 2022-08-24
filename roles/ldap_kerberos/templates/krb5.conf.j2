@@ -8,6 +8,7 @@ includedir /etc/krb5.conf.d/
 [libdefaults]
   dns_lookup_realm = false
   ticket_lifetime = 24h
+  renew_lifetime = {{ kerberos_renew_lifetime }}
   forwardable = true
   rdns = false
   pkinit_anchors = FILE:/etc/pki/tls/certs/ca-bundle.crt
@@ -24,4 +25,3 @@ includedir /etc/krb5.conf.d/
 
 [domain_realm]
   .{{ domain }} = {{ realm }}
-
