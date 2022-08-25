@@ -17,4 +17,4 @@
     dest: /etc/krb5-https.conf
   when: "'kdcproxy' in groups"
   vars:
-    kerberos_server: "{{ kdcproxy_server }}"
+    kerberos_servers: "{{ kdcproxy_servers }}"

@@ -119,7 +119,7 @@ SSLCertificateKeyFile /etc/ssl/certs/{{ inventory_hostname }}.{{ domain }}.key
 #   Set the CA certificate verification path where to find CA
 #   certificates for client authentication or alternatively one
 #   huge file containing all of them (file must be PEM encoded)
-SSLCACertificateFile /etc/ssl/certs/tdp_ca.crt
+SSLCACertificateFile {{ httpd_ca_root }}
 
 #   Client Authentication (Type):
 #   Client certificate verification type and depth.  Types are

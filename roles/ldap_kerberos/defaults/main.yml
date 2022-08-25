@@ -86,9 +86,19 @@ kerberos_kadmin_admin_template: "*/admin@{{ realm }}"
 kerberos_renew_lifetime: "7d 0h 0m 0s"
 kerberos_max_renewable_life: "7d 0h 0m 0s"
 
-kerberos_server: "{{ groups['kdc'][0] }}.{{ domain }}"
+kerberos_servers: >-
+  {{
+    groups['kdc']
+    | map('regex_replace', '^(.*)$', '\1.' + domain)
+    | list
+  }}
 
-kdcproxy_server: https://{{ groups['kdcproxy'][0] }}.{{ domain }}/KdcProxy
+kdcproxy_servers: >-
+  {{
+    groups['kdcproxy']
+    | map('regex_replace', '^(.*)$', 'https://\1.' + domain + '/KdcProxy')
+    | list
+  }}
 
 certificates_path: /etc/ssl/certs
 certificates_ca_filename: tdp_ca
