@@ -18,7 +18,7 @@ The `topology.ini` file includes Ansible groups to work with playbooks inside th
 ansible-playbook playbooks/all.yml
 ```
 
-This playbook deploys the following services: Chrony, a CA.
+This playbook deploys the following services: Chrony, a CA, a LDAP, a KDC.
 
 ## HTTP proxy configuration
 
