@@ -1,0 +1,177 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+proxy_env:
+  http_proxy: "{{ http_proxy | default ('') }}"
+  HTTP_PROXY: "{{ http_proxy | default ('') }}"
+  https_proxy: "{{ https_proxy | default ('') }}"
+  HTTPS_PROXY: "{{ https_proxy | default ('') }}"
+  no_proxy: "{{ no_proxy | default ('') }}"
+  NO_PROXY: "{{ no_proxy | default ('') }}"
+
+postgresql_use_public_repo: yes
+postgresql_public_repo_rpm_url: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
+
+postgresql_version: 12
+
+postgresql_default_packages:
+  common:
+    - postgresql{{ postgresql_version }}-server
+  legacy: # centos 7 and below
+    - python-psycopg2
+  modern: # centos 8 and above
+    - python3-psycopg2
+
+postgresql_listen_addresses: "*"
+postgresql_port: 5432
+postgresql_password_encryption: scram-sha-256
+
+postgresql_service: "postgresql-{{ postgresql_version }}"
+
+postgresql_common_root_dir: /var/lib/pgsql
+postgresql_root_dir: "{{ postgresql_common_root_dir }}/{{ postgresql_version }}"
+
+postgresql_data_dir: "{{ postgresql_root_dir }}/data"
+
+postgresql_conf: "{{ postgresql_data_dir }}/postgresql.conf"
+postgresql_hba_conf: "{{ postgresql_data_dir }}/pg_hba.conf"
+postgresql_ident_conf: "{{ postgresql_data_dir }}/pg_ident.conf"
+
+postgresql_initdb_command: "/usr/pgsql-{{ postgresql_version }}/bin/initdb -D {{ postgresql_data_dir }}"
+
+postgresql_generated_settings:
+  - name: password_encryption
+    value: "{{ postgresql_password_encryption }}"
+  # https://docs.cloudera.com/cdp-private-cloud-base/7.1.6/installation/topics/cdpdc-configuring-starting-postgresql-server.html
+  - name: max_connections
+    value: "{{ (postgresql_databases | count) * 100 + 50 }}"
+  # https://www.enterprisedb.com/postgres-tutorials/how-tune-postgresql-memory
+  # https://www.dbrnd.com/2016/02/postgresql-important-parameters-for-better-performance/
+  - name: shared_buffers
+    value: "{{ (ansible_memtotal_mb * 1/4) | int }}MB"
+  - name: effective_cache_size
+    value: "{{ (ansible_memtotal_mb * 3/4) | int }}MB"
+  - name: wal_buffers
+    value: 16MB
+
+postgresql_additional_settings: []
+
+postgresql_settings: "{{ postgresql_generated_settings + postgresql_additional_settings }}"
+
+postgresql_rangeradmin_user: rangeradmin
+postgresql_rangeradmin_password: rangeradmin
+postgresql_rangeradmin_database: ranger
+
+postgresql_rangerkms_user: rangerkms
+postgresql_rangerkms_password: rangerkms
+postgresql_rangerkms_database: rangerkms
+
+postgresql_hive_user: hive
+postgresql_hive_password: hive
+postgresql_hive_database: hive
+
+postgresql_generated_users: >-
+  [
+    {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
+      { "name": "{{ postgresql_rangeradmin_user }}", "password": "{{ postgresql_rangeradmin_password }}" },
+    {%- endif -%}
+    {%- if groups['ranger_kms'] is defined and groups['ranger_kms'] | length > 0 -%}
+      { "name": "{{ postgresql_rangerkms_user }}", "password": "{{ postgresql_rangerkms_password }}" },
+    {%- endif -%}
+    {%- if groups['hive_ms'] is defined and groups['hive_ms'] | length > 0 -%}
+      { "name": "{{ postgresql_hive_user }}", "password": "{{ postgresql_hive_password }}", "auth_method": "md5" },
+    {%- endif -%}
+  ]
+
+postgresql_additional_users: []
+  # - name: foo
+  #   role_attr_flags: "SUPERUSER,REPLICATION"
+  #   auth_method: peer # used for pg_hba entry
+
+postgresql_users: "{{ postgresql_generated_users + postgresql_additional_users }}"
+
+# Key from "hostvars" to get the pg_hba address
+postgresql_generated_hba_address_hostvars_key: ip
+postgresql_generated_databases: >-
+  [
+    {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
+      { "name": "{{ postgresql_rangeradmin_database }}", "owner": "{{ postgresql_rangeradmin_user }}", "hba_addresses": [ {% for host in groups['ranger_admin'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['ranger_kms'] is defined and groups['ranger_kms'] | length > 0 -%}
+      { "name": "{{ postgresql_rangerkms_database }}", "owner": "{{ postgresql_rangerkms_user }}", "hba_addresses": [ {% for host in groups['ranger_kms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['hive_ms'] is defined and groups['hive_ms'] | length > 0 -%}
+      { "name": "{{ postgresql_hive_database }}", "owner": "{{ postgresql_hive_user }}", "hba_addresses": [ {% for host in groups['hive_ms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+  ]
+
+postgresql_additional_databases: []
+  # - name: bar
+  #   owner: foo
+  #   hba_entry_generated: yes # default (activate auto generated pg_hba entry)
+  #   hba_type: host # default
+  #   hba_addresses:
+  #     - all # default
+
+postgresql_databases: "{{ postgresql_generated_databases + postgresql_additional_databases }}"
+
+postgresql_generated_schemas: >-
+  [
+    {%- for db in postgresql_databases -%}
+      {%- if db.owner is defined -%}
+        { "name": "{{ db.owner }}", "database": "{{ db.name }}", "owner": "{{ db.owner }}" },
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+
+postgresql_additional_schemas: []
+  # - name: foo
+  #   database: bar
+
+postgresql_schemas: "{{ postgresql_generated_schemas + postgresql_additional_schemas }}"
+
+postgresql_base_hba_entries:
+  - type: local
+    database: all
+    user: postgres
+    auth_method: peer
+
+postgresql_generated_hba_entries: >-
+  [
+    {%- for db in postgresql_databases -%}
+      {%- if db.owner is defined and (db.hba_entry_generated is not defined or db.hba_entry_generated) -%}
+        {%- set hba_type = db.hba_type | default('host') -%}
+        {%- if hba_type != 'local' -%}
+          {%- set hba_addresses = db.hba_addresses | default([''], true) -%}
+        {%- else -%}
+          {%- set hba_addresses = [''] -%}
+        {%- endif -%}
+        {%- for address in hba_addresses -%}
+          { "type": "{{ hba_type }}", "database": "{{ db.name }}",
+            {%- for user in postgresql_users -%}
+              {%- if user.name == db.owner -%}
+                "user": "{{ user.name }}",
+                {%- if user.auth_method is defined -%}
+                  "auth_method": "{{ user.auth_method }}",
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if hba_type != 'local' -%}
+              "address": "{{ address | default('all', true) }}",
+            {%- endif -%}
+          },
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  ]
+
+postgresql_additional_hba_entries: []
+  # - type: host
+  #   database: all
+  #   user: all
+  #   address: "127.0.0.1/32"
+  #   auth_method: scram-sha-256
+  #   auth_options: ""
+
+postgresql_hba_entries: "{{ postgresql_additional_hba_entries + postgresql_base_hba_entries + postgresql_generated_hba_entries }}"

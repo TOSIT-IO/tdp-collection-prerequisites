@@ -1,0 +1,68 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Ensures PostgreSQL directories exists and has correct permissions
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: postgres
+    group: postgres
+    mode: '0700'
+  loop:
+    - "{{ postgresql_common_root_dir }}"
+    - "{{ postgresql_root_dir }}"
+    - "{{ postgresql_data_dir }}"
+
+- name: Run initdb
+  command: "{{ postgresql_initdb_command }}"
+  args:
+    creates: "{{ postgresql_conf }}"
+  become: yes
+  become_user: postgres
+
+- name: Template pg_hba.conf
+  template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_hba_conf }}"
+  become: yes
+  become_user: postgres
+  notify: reload postgresql
+
+- name: Configure listen_addresses and port
+  lineinfile:
+    path: "{{ postgresql_conf }}"
+    regexp: '^#?\s*({{ item.key }}\s*=\s*)([^\s]+)(.*)$'
+    line: '\g<1>{{ item.value }}\3'
+    backrefs: yes
+  loop:
+    - key: listen_addresses
+      value: "'{{ postgresql_listen_addresses }}'"
+    - key: port
+      value: "{{ postgresql_port }}"
+  notify: restart postgresql
+
+- name: Start and enable PostgreSQL service
+  service:
+    name: "{{ postgresql_service }}"
+    state: started
+    enabled: yes
+
+# Ensure PostgreSQL is restarted/reloaded if needed
+- meta: flush_handlers
+
+- name: Update PostgreSQL settings
+  postgresql_set:
+    name: "{{ item.name }}"
+    port: "{{ postgresql_port }}"
+    value: "{{ item.value }}"
+  loop: "{{ postgresql_settings }}"
+  register: reg_postgresql_settings
+  become: yes
+  become_user: postgres
+
+- name: Ensure PostgreSQL is restarted if needed
+  service:
+    name: "{{ postgresql_service }}"
+    state: restarted
+  when: reg_postgresql_settings.results | selectattr('changed') | selectattr('restart_required') | list | length | int > 0
