@@ -1,0 +1,16 @@
+WSGIDaemonProcess kdcproxy processes=2 threads=15 maximum-requests=1000 \
+    display-name=%{GROUP}
+WSGIImportScript {{ kdcproxy_location }} \
+    process-group=kdcproxy application-group=kdcproxy
+WSGIScriptAlias /KdcProxy {{ kdcproxy_location }}
+WSGIScriptReloading Off
+
+<Location "/KdcProxy">
+    Satisfy Any
+    Order Deny,Allow
+    Allow from all
+    WSGIProcessGroup kdcproxy
+    WSGIApplicationGroup kdcproxy
+</Location>
+
+ErrorLog /var/log/httpd/kdcproxy.log

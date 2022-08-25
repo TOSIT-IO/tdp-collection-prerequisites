@@ -1,0 +1,53 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Only needed on centos 8
+- name: Enable idm module
+  command: dnf module enable idm:DL1 -y
+  args:
+    warn: no
+  when: ansible_distribution_major_version | int == 8
+  register: dnf_result
+  changed_when: '"Enabling module" in dnf_result.stdout'
+  notify: dnf makecache
+
+- name: Install KDCProxy packages
+  package:
+    name: "{{ kdcproxy_default_packages['common'] + kdcproxy_default_packages[packages_version] }}"
+    state: present
+  vars:
+    packages_version: "{{ ((ansible_distribution_major_version | int) < 8) | ternary('legacy','modern') }}"
+
+- name: Template ssl-httpd.conf
+  template:
+    src: ssl-httpd.conf.j2
+    dest: /etc/httpd/conf.d/ssl.conf
+  notify: reload httpd
+
+- name: Template krb5.conf
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5.conf
+  notify: reload httpd
+
+- name: Get kdcproxy location
+  command: "{{ python_interpreter }} -c 'import kdcproxy;print(kdcproxy.__file__.rstrip(\"c\"))'"
+  changed_when: no
+  register: kdcproxy_output
+  vars:
+    python_interpreter: "{{ ((ansible_distribution_major_version | int) < 8) | ternary('python2','python3') }}"
+
+- name: Template kdcproxy-httpd.conf
+  template:
+    src: kdcproxy-httpd.conf.j2
+    dest: /etc/httpd/conf.d/kdcproxy-httpd.conf
+  notify: reload httpd
+  vars:
+    kdcproxy_location: "{{ kdcproxy_output.stdout }}"
+
+- name: Template kdcproxy.conf
+  template:
+    src: kdcproxy.conf.j2
+    dest: /etc/kdcproxy.conf
+  notify: reload httpd

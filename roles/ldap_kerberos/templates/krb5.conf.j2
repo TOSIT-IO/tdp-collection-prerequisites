@@ -21,6 +21,7 @@ includedir /etc/krb5.conf.d/
   {{ realm }} = {
     kdc = {{ kerberos_server }}
     admin_server = {{ kerberos_server }}
+    kpasswd_server = {{ kerberos_server }}
   }
 
 [domain_realm]
