@@ -19,9 +19,11 @@ includedir /etc/krb5.conf.d/
 
 [realms]
   {{ realm }} = {
-    kdc = {{ kerberos_server }}
-    admin_server = {{ kerberos_server }}
-    kpasswd_server = {{ kerberos_server }}
+{% for kdc in kerberos_servers %}
+    kdc = {{ kdc }}
+{% endfor %}
+    admin_server = {{ kerberos_servers[0] }}
+    kpasswd_server = {{ kerberos_servers[0] }}
   }
 
 [domain_realm]
