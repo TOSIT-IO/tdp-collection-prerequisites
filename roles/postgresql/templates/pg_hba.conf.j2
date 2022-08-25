@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+# See: https://www.postgresql.org/docs/current/static/auth-pg-hba-conf.html
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+{% for hba_entry in postgresql_hba_entries %}
+{{ '{:<7}'.format(hba_entry.type) }} {{ '{:<15}'.format(hba_entry.database) }} {{ '{:<15}'.format(hba_entry.user) }} {{ '{:<23}'.format(hba_entry.address | default('')) }} {{ hba_entry.auth_method | default(postgresql_password_encryption) }} {{ hba_entry.auth_options | default('') }}
+{% endfor %}

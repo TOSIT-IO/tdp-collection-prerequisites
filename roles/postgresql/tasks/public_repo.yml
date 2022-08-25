@@ -1,0 +1,13 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Install PostgreSQL public repo RPM
+  yum:
+    name: "{{ postgresql_public_repo_rpm_url }}"
+    disable_gpg_check: yes
+  environment: "{{ proxy_env }}"
+  when: postgresql_use_public_repo
+  notify: yum makecache
+
+- meta: flush_handlers
