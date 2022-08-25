@@ -66,6 +66,7 @@ _The certificates will also be downloaded to the `roles/certificates/files/tdp_g
 ## LDAP and Kerberos
 
 Launches a LDAP server and KDC on the `[kdc]` group hosts.
+Launches a kdcproxy on the `[kdcproxy]` group hosts.
 
 On each host installs Kerberos clients and enable SSSD LDAP authentification.
 
@@ -82,3 +83,8 @@ ansible-playbook playbooks/ldap_kerberos.yml
 ```
 
 _After this, you can log in as the Kerberos admin from any VM with the command `kinit admin/admin` and the password `admin123`. When using a user unix account on `[users_keytab]` group hosts, you can log in with `kinit -ki` which will use the keytab inside the home directory._
+
+A krb5 configuration file, parametrized for HTTPS can be found at `/etc/krb5-https.conf` on every hosts. To authenticate through https and see logs:
+```bash
+env KRB5_TRACE=/dev/stdout KRB5_CONFIG=/etc/krb5-https.conf kinit <your_user>
+```

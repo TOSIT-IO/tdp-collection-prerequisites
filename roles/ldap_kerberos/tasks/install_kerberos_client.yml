@@ -10,3 +10,11 @@
   template:
     src: krb5.conf.j2
     dest: /etc/krb5.conf
+
+- name: Add krb5-https.conf
+  template:
+    src: krb5.conf.j2
+    dest: /etc/krb5-https.conf
+  when: "'kdcproxy' in groups"
+  vars:
+    kerberos_server: "{{ kdcproxy_server }}"

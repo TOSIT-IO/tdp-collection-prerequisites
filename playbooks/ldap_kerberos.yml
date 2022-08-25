@@ -7,6 +7,12 @@
     - import_role:
         name: tosit.tdp_prerequisites.ldap_kerberos
 
+- hosts: kdcproxy
+  tasks:
+    - import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: install_kdcproxy.yml
+
 - hosts: all
   tasks:
     - import_role:
