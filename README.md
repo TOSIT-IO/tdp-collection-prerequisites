@@ -3,8 +3,8 @@
 ## Supported distribution
 
 - Centos 7
-- Rocky 8.6+, 9
-- Alma[^alma] 8, 9
+- Rocky 8.6+
+- Alma[^alma] 8
 
 [^alma]: Alma does not provide `openldap-servers` package so it is not supported for host in `[kdc]` Ansible group.
 
