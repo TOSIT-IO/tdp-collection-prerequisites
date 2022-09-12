@@ -2,6 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: Install latest version of ca-certificates
+  yum:
+    name: ca-certificates
+    state: latest
+  environment: "{{ proxy_env }}"
+  when: postgresql_use_public_repo
+
 - name: Install PostgreSQL public repo RPM
   yum:
     name: "{{ postgresql_public_repo_rpm_url }}"
