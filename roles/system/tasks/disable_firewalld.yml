@@ -2,8 +2,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: Check if firewalld is installed
+  yum:
+    list: installed
+  register: yum_installed
+
 - name: Stop and disable firewalld
   service:
     name: firewalld
     state: stopped
     enabled: no
+  when: "'firewalld' in (yum_installed.results | map(attribute='name'))"
