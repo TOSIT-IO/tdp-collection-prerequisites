@@ -6,3 +6,4 @@
   tasks:
     - import_role:
         name: tosit.tdp_prerequisites.chrony
+      when: not (ansible_virtualization_role == 'guest' and ansible_virtualization_type == 'lxc')
