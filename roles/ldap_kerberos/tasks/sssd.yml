@@ -8,12 +8,19 @@
       - sssd
       - oddjob-mkhomedir
 
+- name: Check if kcm_default_ccache conf exists
+  stat:
+    path: /etc/krb5.conf.d/kcm_default_ccache
+  register: kcm_default_ccache_conf
+
 - name: Disable sssd-kcm cache
   replace:
     path: /etc/krb5.conf.d/kcm_default_ccache
-    regexp: '(^(?!#).*default_ccache_name = KCM:*)'
+    regexp: "(^(?!#).*default_ccache_name = KCM:*)"
     replace: '#\1'
-  when: ansible_distribution_major_version | int > 7
+  when:
+    - kcm_default_ccache_conf.stat.exists
+    - ansible_distribution_major_version | int > 7
 
 - name: Template sssd.conf
   template:
@@ -43,10 +50,11 @@
       shell: authselect current
       register: authselect_current
       changed_when: no
+      failed_when: authselect_current.rc not in [0, 2]
       check_mode: no
 
     - name: Use sssd with-mkhomedir as auth profile
-      command: authselect select sssd with-mkhomedir
+      command: authselect select sssd with-mkhomedir --force
       when: "'sssd' not in authselect_current.stdout or 'with-mkhomedir' not in authselect_current.stdout"
   when: ansible_distribution_major_version | int > 7
 
