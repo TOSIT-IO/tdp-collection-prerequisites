@@ -23,11 +23,13 @@ default_packages:
     - python3
     - python3-pip
     - python3-setuptools
+    - python3-virtualenv
   legacy: # centos 7 and below
     # Installing python2-setuptools required by the Ansible pip module
     - authconfig
     - python2-setuptools
     - python2-cryptography
+    - python2-virtualenv
   modern: # centos 8 and above
     - authselect
     - python2
