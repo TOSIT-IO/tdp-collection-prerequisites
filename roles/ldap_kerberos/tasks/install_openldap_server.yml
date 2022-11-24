@@ -23,10 +23,38 @@
   vars:
     kerberos_schema_version: "{{ ( (ansible_distribution_major_version | int) < 8) | ternary('-' + reg_klist.stdout.split(' ')[-1],'') }}"
 
+- name: Copy TLS key pair to ldap folder
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: root
+    mode: "{{ item.mode }}"
+    remote_src: yes
+  loop:
+    - src: "{{ certificates_public_key }}"
+      dest: "{{ ldap_public_key }}"
+      owner: root
+      mode: "0644"
+    - src: "{{ certificates_private_key }}"
+      dest: "{{ ldap_private_key }}"
+      owner: ldap
+      mode: "0440"
+  notify: restart slapd
+
 - name: Configure slapd.conf
   template:
     src: slapd.conf.j2
     dest: /etc/openldap/slapd.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart slapd
+
+- name: Configure /etc/sysconfig/slapd
+  template:
+    src: sysconfig-slapd.j2
+    dest: /etc/sysconfig/slapd
     owner: root
     group: root
     mode: "0644"
