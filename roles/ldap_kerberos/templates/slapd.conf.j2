@@ -25,3 +25,7 @@ index objectClass,uid,mail,cn eq,pres
 # Database index for Kerberos
 index krbPrincipalName eq,pres,sub
 
+# TLS configuration
+TLSCACertificateFile    {{ ldap_ca_root }}
+TLSCertificateFile      {{ ldap_public_key }}
+TLSCertificateKeyFile   {{ ldap_private_key }}

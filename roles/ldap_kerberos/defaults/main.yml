@@ -102,8 +102,14 @@ kdcproxy_servers: >-
 
 certificates_path: /etc/ssl/certs
 certificates_ca_filename: tdp_ca
+certificates_cert_filename: "{{ inventory_hostname }}.{{ domain }}"
+certificates_public_key: "{{ certificates_path }}/{{ certificates_cert_filename }}.pem"
+certificates_private_key: "{{ certificates_path }}/{{ certificates_cert_filename }}.key"
 
-httpd_ca_root: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
+
+ldap_ca_root: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
+ldap_public_key: "/etc/openldap/certs/{{ certificates_cert_filename }}.pem"
+ldap_private_key: "/etc/openldap/certs/{{ certificates_cert_filename }}.key"
 
 kdcproxy_default_packages:
   common:
