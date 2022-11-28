@@ -130,10 +130,13 @@ postgresql_additional_databases: []
 
 postgresql_databases: "{{ postgresql_generated_databases + postgresql_additional_databases }}"
 
+#
+# Hive metastore uses "public" schema hardcoded, no schema is created for Hive (issue #28)
+#
 postgresql_generated_schemas: >-
   [
     {%- for db in postgresql_databases -%}
-      {%- if db.owner is defined -%}
+      {%- if db.owner is defined and db.owner != postgresql_hive_user -%}
         { "name": "{{ db.owner }}", "database": "{{ db.name }}", "owner": "{{ db.owner }}" },
       {%- endif -%}
     {%- endfor -%}
