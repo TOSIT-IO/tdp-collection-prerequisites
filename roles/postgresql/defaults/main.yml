@@ -75,6 +75,11 @@ postgresql_jupyterhub_user: jupyterhub
 postgresql_jupyterhub_password: jupyterhub
 postgresql_jupyterhub_database: jupyterhub
 
+no_custom_schemas_users: >-
+  [ 
+    "{{ postgresql_hive_user }}",
+  ] 
+
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -119,6 +124,7 @@ postgresql_generated_databases: >-
 postgresql_additional_databases: []
   # - name: bar
   #   owner: foo
+  #   schema_generated: yes # default (auto generate schema list)   
   #   hba_entry_generated: yes # default (activate auto generated pg_hba entry)
   #   hba_type: host # default
   #   hba_addresses:
@@ -127,12 +133,12 @@ postgresql_additional_databases: []
 postgresql_databases: "{{ postgresql_generated_databases + postgresql_additional_databases }}"
 
 #
-# Hive metastore uses "public" schema hardcoded, no schema is created for Hive (issue #28)
+# Hive MetaStore use of "public" schema is hardcoded in its scripts, therefore we do not create a specific schema for Hive (issue #28)
 #
 postgresql_generated_schemas: >-
   [
     {%- for db in postgresql_databases -%}
-      {%- if db.owner is defined and db.owner != postgresql_hive_user -%}
+      {%- if db.owner is defined and (db.schema_generated is not defined or db.schema_generated) and not db.owner in no_custom_schemas_users -%}
         { "name": "{{ db.owner }}", "database": "{{ db.name }}", "owner": "{{ db.owner }}" },
       {%- endif -%}
     {%- endfor -%}
