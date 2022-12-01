@@ -1,0 +1,15 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Start and enable cgconfig service
+  service:
+    name: cgconfig
+    state: started
+    enabled: yes
+
+- name: Start and enable cgred service
+  service:
+    name: cgred
+    state: started
+    enabled: yes
