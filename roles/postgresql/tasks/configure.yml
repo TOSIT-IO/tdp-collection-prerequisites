@@ -13,6 +13,7 @@
     - "{{ postgresql_common_root_dir }}"
     - "{{ postgresql_root_dir }}"
     - "{{ postgresql_data_dir }}"
+    - "{{ postgresql_log_dir }}"
 
 - name: Run initdb
   command: "{{ postgresql_initdb_command }}"
@@ -40,6 +41,8 @@
       value: "'{{ postgresql_listen_addresses }}'"
     - key: port
       value: "{{ postgresql_port }}"
+    - key: log_directory
+      value: "'{{ postgresql_log_dir }}'"
   notify: restart postgresql
 
 - name: Start and enable PostgreSQL service

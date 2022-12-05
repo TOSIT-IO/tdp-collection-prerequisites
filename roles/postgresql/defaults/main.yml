@@ -34,6 +34,8 @@ postgresql_root_dir: "{{ postgresql_common_root_dir }}/{{ postgresql_version }}"
 
 postgresql_data_dir: "{{ postgresql_root_dir }}/data"
 
+postgresql_log_dir: /var/log/postgresql
+
 postgresql_conf: "{{ postgresql_data_dir }}/postgresql.conf"
 postgresql_hba_conf: "{{ postgresql_data_dir }}/pg_hba.conf"
 postgresql_ident_conf: "{{ postgresql_data_dir }}/pg_ident.conf"
@@ -54,6 +56,8 @@ postgresql_generated_settings:
     value: "{{ (ansible_memtotal_mb * 3/4) | int }}MB"
   - name: wal_buffers
     value: 16MB
+  - name: maintenance_work_mem
+    value: "{{ (ansible_memtotal_mb * 1/20) | int }}MB"
 
 postgresql_additional_settings: []
 
