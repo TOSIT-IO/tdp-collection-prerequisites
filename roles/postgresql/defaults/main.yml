@@ -75,11 +75,6 @@ postgresql_jupyterhub_user: jupyterhub
 postgresql_jupyterhub_password: jupyterhub
 postgresql_jupyterhub_database: jupyterhub
 
-no_custom_schemas_users: >-
-  [ 
-    "{{ postgresql_hive_user }}",
-  ] 
-
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -114,7 +109,7 @@ postgresql_generated_databases: >-
       { "name": "{{ postgresql_rangerkms_database }}", "owner": "{{ postgresql_rangerkms_user }}", "hba_addresses": [ {% for host in groups['ranger_kms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
     {%- if groups['hive_ms'] is defined and groups['hive_ms'] | length > 0 -%}
-      { "name": "{{ postgresql_hive_database }}", "owner": "{{ postgresql_hive_user }}", "hba_addresses": [ {% for host in groups['hive_ms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+      { "name": "{{ postgresql_hive_database }}", "owner": "{{ postgresql_hive_user }}", "schema_generated": "no", "hba_addresses": [ {% for host in groups['hive_ms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
     {%- if groups['jupyterhub_server'] is defined and groups['jupyterhub_server'] | length > 0 -%}
       { "name": "{{ postgresql_jupyterhub_database }}", "owner": "{{ postgresql_jupyterhub_user }}", "hba_addresses": [ {% for host in groups['jupyterhub_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
@@ -134,11 +129,12 @@ postgresql_databases: "{{ postgresql_generated_databases + postgresql_additional
 
 #
 # Hive MetaStore use of "public" schema is hardcoded in its scripts, therefore we do not create a specific schema for Hive (issue #28)
+# "schema_generated" is set to "no" in "hive" database
 #
 postgresql_generated_schemas: >-
   [
     {%- for db in postgresql_databases -%}
-      {%- if db.owner is defined and (db.schema_generated is not defined or db.schema_generated) and not db.owner in no_custom_schemas_users -%}
+      {%- if db.owner is defined and (not db.schema_generated is defined or not db.schema_generated|length or db.schema_generated == "yes") -%}
         { "name": "{{ db.owner }}", "database": "{{ db.name }}", "owner": "{{ db.owner }}" },
       {%- endif -%}
     {%- endfor -%}
