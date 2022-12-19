@@ -192,5 +192,12 @@ postgresql_additional_hba_entries: []
   #   address: "127.0.0.1/32"
   #   auth_method: scram-sha-256
   #   auth_options: ""
-
-postgresql_hba_entries: "{{ postgresql_additional_hba_entries + postgresql_base_hba_entries + postgresql_generated_hba_entries }}"
+  ##### Note for HA in replication case ##### 
+  # You should put in the last lines with a list of replication host ip addresses:
+  # - type: "host"
+  #   database: "replication"
+  #   user: "{{ replication_user }}"
+  #   address: "{{ replication_host_ip }}/32"
+  #   auth_method: "scram-sha-256"
+ 
+postgresql_hba_entries: "{{ postgresql_base_hba_entries + postgresql_generated_hba_entries + postgresql_additional_hba_entries }}"
