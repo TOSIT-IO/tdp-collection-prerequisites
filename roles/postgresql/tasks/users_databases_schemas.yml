@@ -6,7 +6,7 @@
   postgresql_user:
     name: "{{ item.name }}"
     encrypted: "{{ item.encrypted | default(omit) }}"
-    password: "{% if item.auth_method is defined and item.auth_method == 'md5' %}md5{{ '{}{}'.format(item.name, item.name) | md5 }}{% else %}{{ item.name }}{% endif %}"
+    password: "{% if item.auth_method is defined and item.auth_method == 'md5' %}md5{{ '{}{}'.format(item.password, item.name) | md5 }}{% else %}{{ item.password }}{% endif %}"
     port: "{{ postgresql_port }}"
     priv: "{{ item.priv | default(omit) }}"
     role_attr_flags: "{{ item.role_attr_flags | default(omit) }}"
