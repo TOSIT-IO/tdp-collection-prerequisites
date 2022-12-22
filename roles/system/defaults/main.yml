@@ -18,7 +18,7 @@ default_packages:
     - wget
     - curl
     - unzip
-    - nc
+    - nmap-ncat
     - expect
     - python3
     - python3-pip
@@ -35,4 +35,3 @@ default_packages:
     - authselect
     - python2
     - python3-cryptography
-    - nmap-ncat
