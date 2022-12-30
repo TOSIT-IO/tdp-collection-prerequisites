@@ -24,6 +24,7 @@ default_packages:
     - python3-pip
     - python3-setuptools
     - python3-virtualenv
+    - python3-lxml
     - libcgroup-tools
   legacy: # centos 7 and below
     # Installing python2-setuptools required by the Ansible pip module
