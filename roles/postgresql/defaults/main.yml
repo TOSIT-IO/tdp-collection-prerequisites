@@ -79,6 +79,10 @@ postgresql_jupyterhub_user: jupyterhub
 postgresql_jupyterhub_password: jupyterhub
 postgresql_jupyterhub_database: jupyterhub
 
+postgresql_hue_user: hue
+postgresql_hue_password: hue
+postgresql_hue_database: hue
+
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -92,6 +96,9 @@ postgresql_generated_users: >-
     {%- endif -%}
     {%- if groups['jupyterhub_server'] is defined and groups['jupyterhub_server'] | length > 0 -%}
       { "name": "{{ postgresql_jupyterhub_user }}", "password": "{{ postgresql_jupyterhub_password }}" },
+    {%- endif -%}
+    {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
+      { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}", "auth_method": "md5" },
     {%- endif -%}
   ]
 
@@ -117,6 +124,9 @@ postgresql_generated_databases: >-
     {%- endif -%}
     {%- if groups['jupyterhub_server'] is defined and groups['jupyterhub_server'] | length > 0 -%}
       { "name": "{{ postgresql_jupyterhub_database }}", "owner": "{{ postgresql_jupyterhub_user }}", "hba_addresses": [ {% for host in groups['jupyterhub_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
+      { "name": "{{ postgresql_hue_database }}", "owner": "{{ postgresql_hue_user }}", "hba_addresses": [ {% for host in groups['hue_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
   ]
 
