@@ -94,7 +94,7 @@ postgresql_generated_users: >-
       { "name": "{{ postgresql_jupyterhub_user }}", "password": "{{ postgresql_jupyterhub_password }}" },
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
-      { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}", "auth_method": "md5" },
+      { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}" },
     {%- endif -%}
   ]
 
