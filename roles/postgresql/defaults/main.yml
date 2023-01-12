@@ -19,7 +19,7 @@ postgresql_default_packages:
   common:
     - postgresql{{ postgresql_version }}-server
   legacy: # centos 7 and below
-    - python-psycopg2
+    - python2-psycopg2
   modern: # centos 8 and above
     - python3-psycopg2
 
