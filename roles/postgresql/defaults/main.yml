@@ -23,6 +23,12 @@ postgresql_default_packages:
   modern: # centos 8 and above
     - python3-psycopg2
 
+postgresql_client_default_packages:
+  legacy: # centos 7 and below
+    - python2-psycopg2
+  modern: # centos 8 and above
+    - python3-psycopg2
+
 postgresql_listen_addresses: "*"
 postgresql_port: 5432
 postgresql_password_encryption: scram-sha-256
