@@ -1,0 +1,9 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Start and enable Fluent Bit service
+  service:
+    name: "{{ fluentbit_service }}"
+    state: started
+    enabled: yes

@@ -1,0 +1,10 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- import_tasks: repository.yml
+
+- name: Install Fluentbit package
+  yum:
+    name: "{{ fluentbit_package_name }}-{{ fluentbit_package_version }}"
+    state: present

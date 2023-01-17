@@ -1,0 +1,17 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: yum makecache
+  command: yum makecache -y
+  args:
+    warn: False
+
+- name: restart fluentbit
+  service:
+    name: "{{ fluentbit_service }}"
+    state: restarted
+
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes

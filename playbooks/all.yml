@@ -7,3 +7,4 @@
 - import_playbook: certificates.yml
 - import_playbook: ldap_kerberos.yml
 - import_playbook: postgresql.yml
+- import_playbook: fluentbit.yml

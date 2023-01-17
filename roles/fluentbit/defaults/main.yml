@@ -1,0 +1,41 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# repo properties
+fluentbit_repo_name: fluent-bit
+fluentbit_repo_description: Fluent Bit
+fluentbit_repo_baseurl: https://packages.fluentbit.io/centos/$releasever/$basearch/
+fluentbit_repo_gpgcheck: true
+fluentbit_repo_gpgkey: https://packages.fluentbit.io/fluentbit.key
+fluentbit_repo_repo_gpgcheck: true
+
+# package properties
+fluentbit_package_name: fluent-bit
+fluentbit_package_version: 2.0.8-1
+
+# service properties
+fluentbit_service: fluent-bit.service
+
+# fluentbit configuration
+fluent_bit_configuration_dir: /etc/fluent-bit
+fluent_bit_configuration_file: "{{ fluent_bit_configuration_dir }}/fluent-bit.conf"
+fluent_bit_configuration:
+  SERVICE:
+    flush: 1
+    daemon: "Off"
+    log_level: info
+    parsers_file: parsers.conf
+    plugins_file: plugins.conf
+    http_server: "Off"
+    http_listen: 0.0.0.0
+    http_port: 2020
+    storage.metrics: "on"
+  INPUT:
+    name: cpu
+    tag: cpu.local
+    interval_sec: 1
+  OUTPUT:
+    name: stdout
+    match: "*"
+fluent_bit_configuration_includes: []

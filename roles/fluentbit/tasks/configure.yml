@@ -1,0 +1,19 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: "Template Fluentbit service file"
+  template:
+    src: fluent-bit.service.j2
+    dest: "/usr/lib/systemd/system/{{ fluentbit_service }}"
+    mode: 0644
+  notify: "systemctl daemon-reload"
+
+- name: "Template Fluentbit configuration"
+  template:
+    src: fluent-bit.conf.j2
+    dest: "{{ fluent_bit_configuration_file }}"
+    mode: 0644
+  notify: "restart fluentbit"
+
+- meta: flush_handlers

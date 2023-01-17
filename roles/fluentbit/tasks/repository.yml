@@ -1,0 +1,16 @@
+# Copyright 2023 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Add Fluentbit repository
+  yum_repository:
+    name: "{{ fluentbit_repo_name }}"
+    description: "{{ fluentbit_repo_description }}"
+    baseurl: "{{ fluentbit_repo_baseurl }}"
+    gpgcheck: "{{ fluentbit_repo_gpgcheck }}"
+    gpgkey: "{{ fluentbit_repo_gpgkey }}"
+    repo_gpgcheck: "{{ fluentbit_repo_repo_gpgcheck }}"
+    enabled: true
+  notify: yum makecache  
+
+- meta: flush_handlers
