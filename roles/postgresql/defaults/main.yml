@@ -26,6 +26,7 @@ postgresql_default_packages:
 postgresql_client_default_packages:
   legacy: # centos 7 and below
     - python2-psycopg2
+    - libpq5
   modern: # centos 8 and above
     - python3-psycopg2
 
