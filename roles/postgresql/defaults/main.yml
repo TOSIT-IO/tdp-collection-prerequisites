@@ -90,6 +90,10 @@ postgresql_hue_user: hue
 postgresql_hue_password: hue
 postgresql_hue_database: hue
 
+postgresql_exporter_user: postgres_exporter
+postgresql_exporter_password: postgresexporter
+postgresql_exporter_database: postgres_exporter
+
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -106,6 +110,9 @@ postgresql_generated_users: >-
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
       { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}" },
+    {%- endif -%}
+    {%- if groups['exporter_postgres'] is defined and groups['exporter_postgres'] | length > 0 -%}
+      { "name": "{{ postgresql_exporter_user }}", "password": "{{ postgresql_exporter_password }}", "groups": "pg_monitor" },
     {%- endif -%}
   ]
 
@@ -134,6 +141,9 @@ postgresql_generated_databases: >-
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
       { "name": "{{ postgresql_hue_database }}", "owner": "{{ postgresql_hue_user }}", "hba_addresses": [ {% for host in groups['hue_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['exporter_postgres'] is defined and groups['exporter_postgres'] | length > 0 -%}
+      { "name": "{{ postgresql_exporter_database }}", "owner": "{{ postgresql_exporter_user }}", "schema_generated": false, "hba_addresses": [ {% for host in groups['exporter_postgres'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
   ]
 
