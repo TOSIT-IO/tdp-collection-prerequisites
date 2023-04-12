@@ -90,9 +90,9 @@ postgresql_hue_user: hue
 postgresql_hue_password: hue
 postgresql_hue_database: hue
 
-postgresql_exporter_user: postgres_exporter
-postgresql_exporter_password: postgresexporter
-postgresql_exporter_database: postgres_exporter
+postgresql_exporter_user: exporter
+postgresql_exporter_password: exporter
+postgresql_exporter_database: exporter
 
 postgresql_generated_users: >-
   [
@@ -112,7 +112,7 @@ postgresql_generated_users: >-
       { "name": "{{ postgresql_hue_user }}", "password": "{{ postgresql_hue_password }}" },
     {%- endif -%}
     {%- if groups['exporter_postgres'] is defined and groups['exporter_postgres'] | length > 0 -%}
-      { "name": "{{ postgresql_exporter_user }}", "password": "{{ postgresql_exporter_password }}", "groups": "pg_monitor" },
+      { "name": "{{ postgresql_exporter_user }}", "password": "{{ postgresql_exporter_password }}", "groups": ["pg_monitor"] },
     {%- endif -%}
   ]
 
