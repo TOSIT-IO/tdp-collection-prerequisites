@@ -92,6 +92,10 @@
     - reg_ldapadd.rc != 68
   changed_when: reg_ldapadd.rc != 68
   loop: "{{ ldap_groups }}"
+  loop_control:
+    label:
+      group: "{{ item.group }}"
+      gid: "{{ item.gid }}"
   vars:
     group: "{{ item.group }}"
     gid: "{{ item.gid }}"
