@@ -10,6 +10,8 @@ proxy_env:
   no_proxy: "{{ no_proxy | default ('') }}"
   NO_PROXY: "{{ no_proxy | default ('') }}"
 
+postgresql_airgap_install: false
+postgresql_install_from_file: false
 postgresql_use_public_repo: yes
 postgresql_public_repo_rpm_url: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 
@@ -29,6 +31,25 @@ postgresql_client_default_packages:
     - libpq5
   modern: # centos 8 and above
     - python3-psycopg2
+ 
+# database packages paths for air-gap install
+# provide url path to package on satelite repo or path to local file
+postgresql_default_packages_path:
+  common:
+    - https://download.postgresql.org/pub/repos/yum/12/redhat/rhel-7-x86_64/postgresql12-server-12.14-1PGDG.rhel7.x86_64.rpm
+  legacy: # centos 7 and below
+    - https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-7-x86_64/python2-psycopg2-2.8.6-1.rhel7.x86_64.rpm
+  modern: # centos 8 and above
+    - https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-7-x86_64/python3-psycopg2-2.8.6-1.rhel7.x86_64.rpm
+
+# client packages paths for air-gap install
+# provide url path to package on satelite repo or path to local file
+postgresql_client_default_packages_path:
+  legacy: # centos 7 and below
+    - https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-7-x86_64/python2-psycopg2-2.8.6-1.rhel7.x86_64.rpm
+    - https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-7-x86_64/libpq5-15.2-42.1PGDG.rhel7.x86_64.rpm
+  modern: # centos 8 and above
+    - https://download.postgresql.org/pub/repos/yum/common/redhat/rhel-7-x86_64/python3-psycopg2-2.8.6-1.rhel7.x86_64.rpm
 
 postgresql_listen_addresses: "*"
 postgresql_port: 5432
