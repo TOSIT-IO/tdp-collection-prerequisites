@@ -3,7 +3,7 @@
 
 ---
 - name: Ensures PostgreSQL directories exists and has correct permissions
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: postgres
@@ -16,14 +16,14 @@
     - "{{ postgresql_log_dir }}"
 
 - name: Run initdb
-  command: "{{ postgresql_initdb_command }}"
+  ansible.builtin.command: "{{ postgresql_initdb_command }}"
   args:
     creates: "{{ postgresql_conf }}"
   become: yes
   become_user: postgres
 
 - name: Template pg_hba.conf
-  template:
+  ansible.builtin.template:
     src: pg_hba.conf.j2
     dest: "{{ postgresql_hba_conf }}"
   become: yes
@@ -31,7 +31,7 @@
   notify: reload postgresql
 
 - name: Configure listen_addresses and port
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: "{{ postgresql_conf }}"
     regexp: '^#?\s*({{ item.key }}\s*=\s*)([^\s]+)(.*)$'
     line: '\g<1>{{ item.value }}\3'
@@ -46,16 +46,16 @@
   notify: restart postgresql
 
 - name: Start and enable PostgreSQL service
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: started
     enabled: yes
 
 # Ensure PostgreSQL is restarted/reloaded if needed
-- meta: flush_handlers
+- ansible.builtin.meta: flush_handlers
 
 - name: Update PostgreSQL settings
-  postgresql_set:
+  community.postgresql.postgresql_set:
     name: "{{ item.name }}"
     port: "{{ postgresql_port }}"
     value: "{{ item.value }}"
@@ -65,7 +65,7 @@
   become_user: postgres
 
 - name: Ensure PostgreSQL is restarted if needed
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: restarted
   when: reg_postgresql_settings.results | selectattr('changed') | selectattr('restart_required') | list | length | int > 0

@@ -3,18 +3,18 @@
 
 ---
 - name: Install sssd and oddjob-mkhomedir
-  package:
+  ansible.builtin.package:
     name:
       - sssd
       - oddjob-mkhomedir
 
 - name: Check if kcm_default_ccache conf exists
-  stat:
+  ansible.builtin.stat:
     path: /etc/krb5.conf.d/kcm_default_ccache
   register: kcm_default_ccache_conf
 
 - name: Disable sssd-kcm cache
-  replace:
+  ansible.builtin.replace:
     path: /etc/krb5.conf.d/kcm_default_ccache
     regexp: "(^(?!#).*default_ccache_name = KCM:*)"
     replace: '#\1'
@@ -23,7 +23,7 @@
     - ansible_distribution_major_version | int > 7
 
 - name: Template sssd.conf
-  template:
+  ansible.builtin.template:
     src: sssd.conf.j2
     dest: /etc/sssd/sssd.conf
     mode: 0600
@@ -31,68 +31,68 @@
 
 - block:
     - name: Check authconfig state
-      shell: authconfig --test
+      ansible.builtin.shell: authconfig --test
       register: authconfig_test
       changed_when: no
       check_mode: no
 
     - name: Enable ssh auth via sssd
-      command: authconfig --enablesssd --enablesssdauth --update
+      ansible.builtin.command: authconfig --enablesssd --enablesssdauth --update
       when: "'pam_sss is disabled' in authconfig_test.stdout"
 
     - name: Enable home directory creation after ssh
-      command: authconfig --enablemkhomedir --update
+      ansible.builtin.command: authconfig --enablemkhomedir --update
       when: "'pam_mkhomedir or pam_oddjob_mkhomedir is disabled' in authconfig_test.stdout"
   when: ansible_distribution_major_version | int < 8
 
 - block:
     - name: Check authselect state
-      shell: authselect current
+      ansible.builtin.shell: authselect current
       register: authselect_current
       changed_when: no
       failed_when: authselect_current.rc not in [0, 2]
       check_mode: no
 
     - name: Use sssd with-mkhomedir as auth profile
-      command: authselect select sssd with-mkhomedir --force
+      ansible.builtin.command: authselect select sssd with-mkhomedir --force
       when: "'sssd' not in authselect_current.stdout or 'with-mkhomedir' not in authselect_current.stdout"
   when: ansible_distribution_major_version | int > 7
 
 - name: Start and enable sssd
-  service:
+  ansible.builtin.service:
     name: sssd
     state: started
     enabled: yes
 
 - name: Start and enable oddjobd
-  service:
+  ansible.builtin.service:
     name: oddjobd
     state: started
     enabled: yes
 
 # Restart sssd if needed before check groups and users
-- meta: flush_handlers
+- ansible.builtin.meta: flush_handlers
 
 - block:
     - name: Check groups
-      shell: "getent group {{ ldap_group_names | join(' ') }} | cut -d ':' -f 1"
+      ansible.builtin.shell: "getent group {{ ldap_group_names | join(' ') }} | cut -d ':' -f 1"
       changed_when: no
       register: reg_check_groups
 
     - name: Assert that groups are pulled from ldap to unix
-      assert:
+      ansible.builtin.assert:
         that: item in reg_check_groups.stdout_lines
         success_msg: "Group '{{ item }}' correctly pulled from ldap"
         fail_msg: "Group '{{ item }}' not pulled from ldap"
       loop: "{{ ldap_group_names }}"
 
     - name: Check users
-      shell: "getent passwd {{ ldap_user_names | join(' ') }} | cut -d ':' -f 1"
+      ansible.builtin.shell: "getent passwd {{ ldap_user_names | join(' ') }} | cut -d ':' -f 1"
       changed_when: no
       register: reg_check_users
 
     - name: Assert that users are pulled from ldap to unix
-      assert:
+      ansible.builtin.assert:
         that: item in reg_check_users.stdout_lines
         success_msg: "User '{{ item }}' correctly pulled from ldap"
         fail_msg: "User '{{ item }}' not pulled from ldap"

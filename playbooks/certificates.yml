@@ -4,13 +4,13 @@
 ---
 - hosts: ca_host
   tasks:
-  - import_role:
+  - ansible.builtin.import_role:
       name: tosit.tdp_prerequisites.certificates
       tasks_from: generate_certificate_authority
 
 - hosts: all
   tasks:
-  - import_role:
+  - ansible.builtin.import_role:
       name: tosit.tdp_prerequisites.certificates
       tasks_from: generate_host_csr
     vars:
@@ -18,7 +18,7 @@
 
 - hosts: ca_host
   tasks:
-  - include_role:
+  - ansible.builtin.include_role:
       name: tosit.tdp_prerequisites.certificates
       tasks_from: sign_certificates
     with_inventory_hostnames: all
@@ -27,7 +27,7 @@
 
 - hosts: all
   tasks:
-  - import_role:
+  - ansible.builtin.import_role:
       name: tosit.tdp_prerequisites.certificates
       tasks_from: copy_to_host
     vars:

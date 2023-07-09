@@ -3,17 +3,17 @@
 
 ---
 - name: Ensure certificates storing folder exists
-  file:
+  ansible.builtin.file:
     path: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs"
     state: directory
 
 - name: Send host's CSR to CA machine
-  copy:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.csr"
     dest: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/"
 
 - name: Generate {{ certificates_cert_filename }} certificate
-  openssl_certificate:
+  community.crypto.x509_certificate:
     provider: ownca
     path: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
     csr_path: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.csr"
@@ -21,7 +21,7 @@
     ownca_privatekey_path: "{{ certificates_path }}/{{ certificates_ca_filename }}.key"
 
 - name: Fetch host's signed certificate
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
     dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
     flat: yes

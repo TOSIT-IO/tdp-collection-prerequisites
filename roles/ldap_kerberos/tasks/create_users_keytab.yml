@@ -4,7 +4,7 @@
 ---
 - name: Create users keytab
   become_user: "{{ item.user }}"
-  shell: echo '{{ create_keytab_command }}' | ktutil
+  ansible.builtin.shell: echo '{{ create_keytab_command }}' | ktutil
   args:
     creates: "/home/{{ item.user }}/{{ item.user }}.keytab"
   vars:

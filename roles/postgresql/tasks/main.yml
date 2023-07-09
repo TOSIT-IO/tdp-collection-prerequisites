@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- import_tasks: packages.yml
-- import_tasks: configure.yml
-- import_tasks: users_databases_schemas.yml
+- ansible.builtin.import_tasks: packages.yml
+- ansible.builtin.import_tasks: configure.yml
+- ansible.builtin.import_tasks: users_databases_schemas.yml

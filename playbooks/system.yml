@@ -4,11 +4,11 @@
 ---
 - hosts: all
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: tosit.tdp_prerequisites.system
 
 - hosts: yarn_nm
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: tosit.tdp_prerequisites.system
         tasks_from: cgroups.yml

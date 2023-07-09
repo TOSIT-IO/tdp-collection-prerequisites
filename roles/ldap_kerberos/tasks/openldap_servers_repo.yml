@@ -3,7 +3,7 @@
 
 ---
 - name: Enable openldap-servers repo
-  ini_file:
+  community.general.ini_file:
     path: "{{ repos[ansible_distribution_major_version]['path'] }}"
     section: "{{ repos[ansible_distribution_major_version]['section'] }}"
     option: enabled

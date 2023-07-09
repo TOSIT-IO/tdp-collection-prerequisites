@@ -3,17 +3,17 @@
 
 ---
 - name: Delete slapd.d
-  file:
+  ansible.builtin.file:
     path: /etc/openldap/slapd.d
     state: absent
 
 - name: Check Kerberos version
-  command: klist -V
+  ansible.builtin.command: klist -V
   register: reg_klist
   changed_when: no
 
 - name: Copy kerberos schema to ldap folder
-  copy:
+  ansible.builtin.copy:
     src: "/usr/share/doc/krb5-server-ldap{{ kerberos_schema_version }}/kerberos.schema"
     dest: /etc/openldap/schema
     owner: root
@@ -24,7 +24,7 @@
     kerberos_schema_version: "{{ ( (ansible_distribution_major_version | int) < 8) | ternary('-' + reg_klist.stdout.split(' ')[-1],'') }}"
 
 - name: Copy TLS key pair to ldap folder
-  copy:
+  ansible.builtin.copy:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ item.owner }}"
@@ -61,13 +61,13 @@
   notify: restart slapd
 
 - name: Start and enable slapd
-  service:
+  ansible.builtin.service:
     name: slapd
     state: started
     enabled: yes
 
 - name: Create LDAP tree
-  shell: |
+  ansible.builtin.shell: |
     ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
     {{ item }}
     EOF
@@ -82,7 +82,7 @@
     - "{{ ldap_groups_tree_ldif }}"
 
 - name: Create LDAP groups
-  shell: |
+  ansible.builtin.shell: |
     ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
     {{ ldap_group_ldif }}
     EOF
@@ -93,15 +93,13 @@
   changed_when: reg_ldapadd.rc != 68
   loop: "{{ ldap_groups }}"
   loop_control:
-    label:
-      group: "{{ item.group }}"
-      gid: "{{ item.gid }}"
+    label: "{'group': '{{ item.group }}', 'gid': '{{ item.gid }}'}"
   vars:
     group: "{{ item.group }}"
     gid: "{{ item.gid }}"
 
 - name: Create LDAP users
-  shell: |
+  ansible.builtin.shell: |
     ldapadd -x -D {{ ldap_rootdn }} -w {{ ldap_rootpw }} << EOF
     {{ ldap_user_ldif }}
     EOF
@@ -112,10 +110,7 @@
   changed_when: reg_ldapadd.rc != 68
   loop: "{{ ldap_users }}"
   loop_control:
-    label:
-      user: "{{ item.user }}"
-      uid: "{{ item.uid }}"
-      gid: "{{ item.gid }}"
+    label: "{'user': '{{ item.user }}', 'uid': '{{ item.uid }}', 'gid': '{{ item.gid }}'}"
   vars:
     user: "{{ item.user }}"
     password: "{{ item.password }}"

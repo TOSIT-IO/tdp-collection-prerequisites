@@ -3,18 +3,16 @@
 
 ---
 - name: Disable dnf module postgresql
-  command: dnf module disable postgresql -y
-  args:
-    warn: no
+  ansible.builtin.command: dnf module disable postgresql -y
   when: ansible_distribution_major_version | int > 7
   register: dnf_result
   changed_when: '"Disabling modules" in dnf_result.stdout'
   notify: yum makecache
 
-- import_tasks: public_repo.yml
+- ansible.builtin.import_tasks: public_repo.yml
 
 - name: Install PostgreSQL packages
-  yum:
+  ansible.builtin.yum:
     name: "{{ postgresql_default_packages['common'] + postgresql_default_packages[packages_version] }}"
     state: present
   vars:

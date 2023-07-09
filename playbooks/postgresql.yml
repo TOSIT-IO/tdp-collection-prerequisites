@@ -4,11 +4,11 @@
 ---
 - hosts: postgresql
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: tosit.tdp_prerequisites.postgresql
 
 - hosts: postgresql_client
   tasks:
-    - import_role:
+    - ansible.builtin.import_role:
         name: tosit.tdp_prerequisites.postgresql
         tasks_from: packages_client.yml

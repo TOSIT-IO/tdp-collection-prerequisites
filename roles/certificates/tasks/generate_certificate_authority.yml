@@ -3,17 +3,17 @@
 
 ---
 - name: Ensure certificates path exists
-  file:
+  ansible.builtin.file:
     path: "{{ certificates_path }}" 
     state: directory
 
 - name: Generate certificate authority's private key
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     path: "{{ certificates_path }}/{{ certificates_ca_filename }}.key"
     size: 4096
 
 - name: Generate certificate authority's certificate signing request
-  openssl_csr:
+  community.crypto.openssl_csr:
     path: "{{ certificates_path }}/{{ certificates_ca_filename }}.csr"
     privatekey_path: "{{ certificates_path }}/{{ certificates_ca_filename }}.key"
     create_subject_key_identifier: yes
@@ -27,14 +27,14 @@
     key_usage_critical: yes
 
 - name: Generate certificate authority's certificate
-  openssl_certificate:
+  community.crypto.x509_certificate:
     provider: selfsigned
     path: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
     csr_path: "{{ certificates_path }}/{{ certificates_ca_filename }}.csr"
     privatekey_path: "{{ certificates_path }}/{{ certificates_ca_filename }}.key"
 
 - name: Fetch certificate authority's certificate
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
     dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
     flat: yes
