@@ -3,7 +3,7 @@
 
 ---
 - name: Set JAVA_HOME
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/environment
     regexp: "^JAVA_HOME="
     line: JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk

@@ -3,13 +3,13 @@
 
 ---
 - name: Configure chrony
-  template:
+  ansible.builtin.template:
     dest: /etc/chrony.conf
     src: chrony.conf.j2
   notify: restart chronyd
 
 - name: Start and enable chronyd service
-  service:
+  ansible.builtin.service:
     name: chronyd
     state: started
     enabled: yes

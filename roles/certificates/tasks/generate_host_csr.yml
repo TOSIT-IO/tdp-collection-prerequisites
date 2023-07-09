@@ -3,12 +3,12 @@
 
 ---
 - name: Generate host's private key
-  openssl_privatekey:
+  community.crypto.openssl_privatekey:
     path: "{{ certificates_path }}/{{ certificates_cert_filename }}.key"
     size: 4096
 
 - name: Generate host's certificate signing request
-  openssl_csr:
+  community.crypto.openssl_csr:
     path: "{{ certificates_path }}/{{ certificates_cert_filename }}.csr"
     privatekey_path: "{{ certificates_path }}/{{ certificates_cert_filename }}.key"
     basic_constraints:
@@ -22,12 +22,12 @@
 - name: Ensure certificates storing folder exists
   delegate_to: localhost
   become: no
-  file:
+  ansible.builtin.file:
     path: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs"
     state: directory
 
 - name: Fetch host's certificate signing request
-  fetch:
+  ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_cert_filename }}.csr"
     dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
     flat: yes

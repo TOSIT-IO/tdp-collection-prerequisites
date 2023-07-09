@@ -3,12 +3,12 @@
 
 ---
 - name: Check if firewalld is installed
-  yum:
+  ansible.builtin.yum:
     list: installed
   register: yum_installed
 
 - name: Stop and disable firewalld
-  service:
+  ansible.builtin.service:
     name: firewalld
     state: stopped
     enabled: no

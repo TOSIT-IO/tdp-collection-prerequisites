@@ -5,7 +5,7 @@
 # --- services dependencies --- #
 
 - name: Add krb5kdc dependency to slapd
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /usr/lib/systemd/system/krb5kdc.service
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -16,7 +16,7 @@
       line: After=syslog.target network.target network-online.target slapd.service
 
 - name: Add kadmin dependency to slapd
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /usr/lib/systemd/system/kadmin.service
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
@@ -29,19 +29,19 @@
 # --- kdc setup --- #
 
 - name: Template krb5.conf
-  template:
+  ansible.builtin.template:
     src: krb5.conf.j2
     dest: /etc/krb5.conf
   notify: restart krb5kdc
 
 - name: Template kdc.conf
-  template:
+  ansible.builtin.template:
     src: kdc.conf.j2
     dest: /var/kerberos/krb5kdc/kdc.conf
   notify: restart krb5kdc
 
 - name: Ensures directory for password stash exists
-  file:
+  ansible.builtin.file:
     path: "{{ ldap_password_file | dirname }}"
     state: directory
 
@@ -49,7 +49,7 @@
 # kdb5_ldap_util stashsrvpw -f {{ ldap_password_file }} {{ kdc_service_dn }}
 # kdb5_ldap_util stashsrvpw -f {{ ldap_password_file }} {{ kadmin_service_dn }}
 - name: Template stash ldap creds
-  template:
+  ansible.builtin.template:
     src: kerberos_ldap_creds.j2
     dest: "{{ ldap_password_file }}"
     owner: root
@@ -60,12 +60,12 @@
     - restart kadmin
 
 - name: Create realm in LDAP
-  command: kdb5_ldap_util -D {{ ldap_admin_dn }} -w {{ ldap_admin_dn_password }} create -subtrees {{ ldap_suffix }} -r {{ realm }} -s -P {{ kerberos_db_master_key }} -H ldapi:///
+  ansible.builtin.command: kdb5_ldap_util -D {{ ldap_admin_dn }} -w {{ ldap_admin_dn_password }} create -subtrees {{ ldap_suffix }} -r {{ realm }} -s -P {{ kerberos_db_master_key }} -H ldapi:///
   args:
     creates: "/var/kerberos/krb5kdc/.k5.{{ realm }}"
 
 - name: Start and enable KDC
-  service:
+  ansible.builtin.service:
     name: krb5kdc
     state: started
     enabled: yes
@@ -73,13 +73,13 @@
 # --- kadmin setup --- #
 
 - name: Template kadm5.acl
-  template:
+  ansible.builtin.template:
     src: kadm5.acl.j2
     dest: /var/kerberos/krb5kdc/kadm5.acl
   notify: restart kadmin
 
 - name: Start and enable kadmin
-  service:
+  ansible.builtin.service:
     name: kadmin
     state: started
     enabled: yes
@@ -87,7 +87,7 @@
 # --- Admin account --- #
 
 - name: Create admin/admin principal
-  command: kadmin.local -q "addprinc -pw {{ kerberos_admin_password }} {{ kerberos_admin_principal }}"
+  ansible.builtin.command: kadmin.local -q "addprinc -pw {{ kerberos_admin_password }} {{ kerberos_admin_principal }}"
   register: reg_addprinc
   failed_when: |
     reg_addprinc is failed or
@@ -98,7 +98,7 @@
 # --- User accounts --- #
 
 - name: Create Kerberos users
-  command: |
+  ansible.builtin.command: |
     kadmin
       -r {{ realm }}
       -p {{ kadmin_principal }}

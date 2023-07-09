@@ -4,31 +4,31 @@
 ---
 - name: Copy certificate authority certificate to host
   diff: no
-  copy:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_ca_filename }}.crt"
     dest: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
     mode: "644"
 
 - name: Copy to local truststore folder
   diff: no
-  copy: 
+  ansible.builtin.copy: 
     src: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
     dest: /etc/pki/ca-trust/source/anchors/
     remote_src: yes
   register: copy_ca
 
 - name: Update host trusted Certificate Authorities
-  shell: update-ca-trust extract
+  ansible.builtin.shell: update-ca-trust extract
   when: copy_ca.changed
 
 - name: Copy certificate to host
   diff: no
-  copy:
+  ansible.builtin.copy:
     src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
     dest: "{{ certificates_path }}"
 
 - name: Getting content of certificate and private key 
-  command: awk 1 {{ openssl_files | join(' ') }}
+  ansible.builtin.command: awk 1 {{ openssl_files | join(' ') }}
   no_log: yes
   vars:
     openssl_files: 
@@ -39,7 +39,7 @@
 
 - name: Create certificate / private key combination on host
   diff: no
-  copy:
+  ansible.builtin.copy:
     dest: "{{ certificates_path }}/{{ certificates_cert_filename }}.all.pem"
     content: "{{ certs_content.stdout_lines | join('\n') }}"
     mode: "500"

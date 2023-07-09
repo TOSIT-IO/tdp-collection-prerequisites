@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
-- import_tasks: openldap_servers_repo.yml
-- import_tasks: packages.yml
-- import_tasks: install_openldap_server.yml
-- import_tasks: install_kerberos_server.yml
+- ansible.builtin.import_tasks: openldap_servers_repo.yml
+- ansible.builtin.import_tasks: packages.yml
+- ansible.builtin.import_tasks: install_openldap_server.yml
+- ansible.builtin.import_tasks: install_kerberos_server.yml

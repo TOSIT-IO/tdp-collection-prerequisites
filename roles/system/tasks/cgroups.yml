@@ -3,13 +3,13 @@
 
 ---
 - name: Start and enable cgconfig service
-  service:
+  ansible.builtin.service:
     name: cgconfig
     state: started
     enabled: yes
 
 - name: Start and enable cgred service
-  service:
+  ansible.builtin.service:
     name: cgred
     state: started
     enabled: yes

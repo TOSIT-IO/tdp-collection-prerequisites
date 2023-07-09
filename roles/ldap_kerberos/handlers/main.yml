@@ -3,31 +3,29 @@
 
 ---
 - name: dnf makecache
-  command: dnf makecache
-  args:
-    warn: False
+  ansible.builtin.command: dnf makecache
 
 - name: restart slapd
-  service:
+  ansible.builtin.service:
     name: slapd
     state: restarted
 
 - name: restart krb5kdc
-  service:
+  ansible.builtin.service:
     name: krb5kdc
     state: restarted
 
 - name: restart kadmin
-  service:
+  ansible.builtin.service:
     name: kadmin
     state: restarted
 
 - name: restart sssd
-  service:
+  ansible.builtin.service:
     name: sssd
     state: restarted
 
 - name: reload httpd
-  service:
+  ansible.builtin.service:
     name: httpd
     state: reloaded

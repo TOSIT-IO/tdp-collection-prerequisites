@@ -3,16 +3,14 @@
 
 ---
 - name: yum makecache
-  command: yum makecache -y
-  args:
-    warn: False
+  ansible.builtin.command: yum makecache -y
 
 - name: restart postgresql
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: restarted
 
 - name: reload postgresql
-  service:
+  ansible.builtin.service:
     name: "{{ postgresql_service }}"
     state: reloaded
