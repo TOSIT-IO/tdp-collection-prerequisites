@@ -1,0 +1,10 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Required for Airflow
+- name: Install Redis
+  ansible.builtin.yum:
+    name: redis
+    state: present
+

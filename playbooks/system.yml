@@ -12,3 +12,10 @@
     - ansible.builtin.import_role:
         name: tosit.tdp_prerequisites.system
         tasks_from: cgroups.yml
+        
+- hosts: redis
+  tasks:
+    - ansible.builtin.import_role:
+        name: tosit.tdp_prerequisites.system
+        tasks_from: redis.yml
+
