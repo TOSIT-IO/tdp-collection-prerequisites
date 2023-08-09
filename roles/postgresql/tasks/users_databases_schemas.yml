@@ -6,7 +6,6 @@
   community.postgresql.postgresql_user:
     name: "{{ item.name }}"
     encrypted: "{{ item.encrypted | default(omit) }}"
-    groups: "{{ item.groups | default(omit) }}"
     password: "{% if item.auth_method is defined and item.auth_method == 'md5' %}md5{{ '{}{}'.format(item.password, item.name) | md5 }}{% else %}{{ item.password }}{% endif %}"
     port: "{{ postgresql_port }}"
     priv: "{{ item.priv | default(omit) }}"
@@ -15,6 +14,19 @@
   loop: "{{ postgresql_users }}"
   loop_control:
     label: "{'name': '{{ item.name }}', 'state': '{{ item.state | default('present') }}'}"
+  become: yes
+  become_user: postgres
+
+- name: Configure PostgreSQL groups for users
+  community.postgresql.postgresql_membership:
+    groups: "{{ item.groups }}"
+    port: "{{ postgresql_port }}"
+    target_roles: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+  when: item.groups is defined
+  loop: "{{ postgresql_users }}"
+  loop_control:
+    label: "{'groups': '{{ item.groups | default(omit) }}', 'target_roles': '{{ item.name }}', 'state': '{{ item.state | default('present') }}'}"
   become: yes
   become_user: postgres
 
