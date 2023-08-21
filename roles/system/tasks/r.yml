@@ -1,0 +1,20 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Install epel-release
+  ansible.builtin.yum:
+    name: epel-release
+    state: present
+  when: "(ansible_distribution_major_version | int) >= 8"
+
+- name: Ensure powertools repository is enabled
+  ansible.builtin.command:
+    cmd: yum config-manager --set-enabled powertools
+  become: yes
+  when: "(ansible_distribution_major_version | int) >= 8"
+
+- name: Install common packages
+  ansible.builtin.yum:
+    name: R
+    state: present

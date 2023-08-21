@@ -4,6 +4,7 @@
 ---
 - ansible.builtin.import_tasks: hosts.yml
 - ansible.builtin.import_tasks: packages.yml
+- ansible.builtin.import_tasks: r.yml
 - ansible.builtin.import_tasks: java_home.yml
 - ansible.builtin.import_tasks: disable_firewalld.yml
 - ansible.builtin.import_tasks: python_pip.yml
