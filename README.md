@@ -2,7 +2,6 @@
 
 ## Supported distribution
 
-- Centos 7
 - Rocky 8.6+
 - Alma[^alma] 8
 
