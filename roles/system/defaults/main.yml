@@ -36,3 +36,5 @@ default_packages:
     - authselect
     - python2
     - python3-cryptography
+
+install_r: false
