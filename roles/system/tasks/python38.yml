@@ -1,0 +1,9 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# Required for Hue 4.11
+- name: Install Python 3.8
+  ansible.builtin.yum:
+    name: python38
+    state: present
