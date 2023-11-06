@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 ---
+- name: Install chrony 
+  ansible.builtin.package:
+    name: chrony 
+    
 - name: Configure chrony
   ansible.builtin.template:
     dest: /etc/chrony.conf
