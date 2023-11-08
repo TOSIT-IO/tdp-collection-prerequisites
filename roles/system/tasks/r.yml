@@ -4,17 +4,24 @@
 ---
 - name: Ensure powertools repository is enabled
   community.general.ini_file:
-    path: "{{ repos[ansible_distribution_major_version]['path'] }}"
-    section: "{{ repos[ansible_distribution_major_version]['section'] }}"
+    path: "{{ repos[ansible_distribution][ansible_distribution_major_version]['path'] }}"
+    section: "{{ repos[ansible_distribution][ansible_distribution_major_version]['section'] }}"
     option: enabled
     value: "1"
     no_extra_spaces: yes
   vars:
     repos:
-      '8':
-        path: /etc/yum.repos.d/Rocky-PowerTools.repo
-        section: powertools
-  when: "(ansible_distribution_major_version | int) >= 8"
+      Rocky:
+        '8':
+          path: /etc/yum.repos.d/Rocky-PowerTools.repo
+          section: powertools
+      AlmaLinux:
+        '8':
+          path: /etc/yum.repos.d/almalinux-powertools.repo
+          section: powertools
+  when:
+    - ansible_distribution in ['Rocky', 'AlmaLinux']
+    - (ansible_distribution_major_version | int) >= 8
 
 - name: Install R
   ansible.builtin.yum:

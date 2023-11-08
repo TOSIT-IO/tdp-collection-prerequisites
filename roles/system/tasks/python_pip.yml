@@ -22,7 +22,7 @@
   environment: "{{ proxy_env }}"
 
 # https://developers.redhat.com/blog/2019/05/07/what-no-python-in-red-hat-enterprise-linux-8
-- name: Set alternatives for Rocky8
+- name: Set alternatives for Rocky8 or Alma8
   community.general.alternatives:
     name: python
     path: /usr/bin/python3
