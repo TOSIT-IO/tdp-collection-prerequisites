@@ -3,9 +3,7 @@
 ## Supported distribution
 
 - Rocky 8.6+
-- Alma[^alma] 8
-
-[^alma]: Alma does not provide `openldap-servers` package so it is not supported for host in `[kdc]` Ansible group.
+- Alma 8
 
 ## Topology
 
