@@ -3,6 +3,7 @@
 
 ---
 certificates_path: /etc/ssl/certs
+certificates_local_path: "{{ lookup('env', 'PWD') }}/files"
 certificates_country_name: fr
 certificates_organization_name: TDP
 certificates_cluster_name: tdp_getting_started

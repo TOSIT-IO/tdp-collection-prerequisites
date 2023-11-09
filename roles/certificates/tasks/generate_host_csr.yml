@@ -23,11 +23,11 @@
   delegate_to: localhost
   become: no
   ansible.builtin.file:
-    path: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs"
+    path: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs"
     state: directory
 
 - name: Fetch host's certificate signing request
   ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_cert_filename }}.csr"
-    dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
+    dest: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/"
     flat: yes
