@@ -5,7 +5,7 @@
 - name: Copy certificate authority certificate to host
   diff: no
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_ca_filename }}.crt"
+    src: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_ca_filename }}.crt"
     dest: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
     mode: "644"
 
@@ -24,7 +24,7 @@
 - name: Copy certificate to host
   diff: no
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
+    src: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
     dest: "{{ certificates_path }}"
 
 - name: Getting content of certificate and private key 

@@ -36,5 +36,5 @@
 - name: Fetch certificate authority's certificate
   ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_ca_filename }}.crt"
-    dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
+    dest: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/"
     flat: yes

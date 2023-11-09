@@ -9,7 +9,7 @@
 
 - name: Send host's CSR to CA machine
   ansible.builtin.copy:
-    src: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.csr"
+    src: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.csr"
     dest: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/"
 
 - name: Generate {{ certificates_cert_filename }} certificate
@@ -23,5 +23,5 @@
 - name: Fetch host's signed certificate
   ansible.builtin.fetch:
     src: "{{ certificates_path }}/{{ certificates_cluster_name }}_certs/{{ certificates_cert_filename }}.pem"
-    dest: "{{ role_path }}/files/{{ certificates_cluster_name }}_certs/"
+    dest: "{{ certificates_local_path }}/{{ certificates_cluster_name }}_certs/"
     flat: yes
