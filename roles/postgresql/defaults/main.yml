@@ -98,6 +98,10 @@ postgresql_exporter_user: exporter
 postgresql_exporter_password: exporter
 postgresql_exporter_database: exporter
 
+postgresql_grafana_user: grafana
+postgresql_grafana_password: grafana
+postgresql_grafana_database: grafana
+
 postgresql_generated_users: >-
   [
     {%- if groups['ranger_admin'] is defined and groups['ranger_admin'] | length > 0 -%}
@@ -121,7 +125,9 @@ postgresql_generated_users: >-
     {%- if groups['exporter_postgres'] is defined and groups['exporter_postgres'] | length > 0 -%}
       { "name": "{{ postgresql_exporter_user }}", "password": "{{ postgresql_exporter_password }}", "groups": ["pg_monitor"] },
     {%- endif -%}
-
+    {%- if groups['grafana'] is defined and groups['grafana'] | length > 0 -%}
+      { "name": "{{ postgresql_grafana_user }}", "password": "{{ postgresql_grafana_password }}" },
+    {%- endif -%}
   ]
 
 postgresql_additional_users: []
@@ -155,6 +161,9 @@ postgresql_generated_databases: >-
     {%- endif -%}
     {%- if groups['exporter_postgres'] is defined and groups['exporter_postgres'] | length > 0 -%}
       { "name": "{{ postgresql_exporter_database }}", "owner": "{{ postgresql_exporter_user }}", "schema_generated": false, "hba_addresses": [ {% for host in groups['exporter_postgres'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- endif -%}
+    {%- if groups['grafana'] is defined and groups['grafana'] | length > 0 -%}
+      { "name": "{{ postgresql_grafana_database }}", "owner": "{{ postgresql_grafana_user }}", "hba_addresses": [ {% for host in groups['grafana'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
   ]
 
