@@ -70,6 +70,8 @@ postgresql_additional_settings: []
 
 postgresql_settings: "{{ postgresql_generated_settings + postgresql_additional_settings }}"
 
+postgresql_jdbc_connector_package: postgresql-jdbc
+
 postgresql_rangeradmin_user: rangeradmin
 postgresql_rangeradmin_password: rangeradmin
 postgresql_rangeradmin_database: ranger
