@@ -1,0 +1,11 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Stop OpenLDAP server
+  hosts: kdc
+  tasks:
+    - name: Stop OpenLDAP server
+      ansible.builtin.import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: stop_openldap.yml

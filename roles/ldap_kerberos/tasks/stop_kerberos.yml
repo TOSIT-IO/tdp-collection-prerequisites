@@ -1,0 +1,15 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Stop kadmin server
+  ansible.builtin.service:
+    name: kadmin
+    state: stopped
+    enabled: true
+
+- name: Stop krb5kdc server
+  ansible.builtin.service:
+    name: krb5kdc
+    state: stopped
+    enabled: true

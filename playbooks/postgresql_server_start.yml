@@ -1,0 +1,11 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Start PostgreSQL server
+  hosts: postgresql
+  tasks:
+    - name: Start PostgreSQL server
+      ansible.builtin.import_role:
+        name: tosit.tdp_prerequisites.postgresql
+        tasks_from: start.yml

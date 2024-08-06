@@ -1,0 +1,15 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Restart krb5kdc server
+  ansible.builtin.service:
+    name: krb5kdc
+    state: restarted
+    enabled: true
+
+- name: Restart kadmin server
+  ansible.builtin.service:
+    name: kadmin
+    state: restarted
+    enabled: true
