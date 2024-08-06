@@ -1,0 +1,11 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Restart httpd server
+  hosts: kdcproxy
+  tasks:
+    - name: Restart httpd server
+      ansible.builtin.import_role:
+        name: tosit.tdp_prerequisites.ldap_kerberos
+        tasks_from: restart_httpd.yml

@@ -1,0 +1,9 @@
+# Copyright 2022 TOSIT.IO
+# SPDX-License-Identifier: Apache-2.0
+
+---
+- name: Start OpenLDAP server
+  ansible.builtin.service:
+    name: slapd
+    state: started
+    enabled: true
