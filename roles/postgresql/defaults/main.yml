@@ -109,7 +109,7 @@ postgresql_generated_users: >-
     {%- if groups['hive_ms'] is defined and groups['hive_ms'] | length > 0 -%}
       { "name": "{{ postgresql_hive_user }}", "password": "{{ postgresql_hive_password }}", "auth_method": "md5" },
     {%- endif -%}
-    {%- if groups['jupyterhub_server'] is defined and groups['jupyterhub_server'] | length > 0 -%}
+    {%- if groups['jupyter_hub'] is defined and groups['jupyter_hub'] | length > 0 -%}
       { "name": "{{ postgresql_jupyterhub_user }}", "password": "{{ postgresql_jupyterhub_password }}" },
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
@@ -143,8 +143,8 @@ postgresql_generated_databases: >-
     {%- if groups['hive_ms'] is defined and groups['hive_ms'] | length > 0 -%}
       { "name": "{{ postgresql_hive_database }}", "owner": "{{ postgresql_hive_user }}", "schema_generated": false, "hba_addresses": [ {% for host in groups['hive_ms'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
-    {%- if groups['jupyterhub_server'] is defined and groups['jupyterhub_server'] | length > 0 -%}
-      { "name": "{{ postgresql_jupyterhub_database }}", "owner": "{{ postgresql_jupyterhub_user }}", "hba_addresses": [ {% for host in groups['jupyterhub_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
+    {%- if groups['jupyter_hub'] is defined and groups['jupyter_hub'] | length > 0 -%}
+      { "name": "{{ postgresql_jupyterhub_database }}", "owner": "{{ postgresql_jupyterhub_user }}", "hba_addresses": [ {% for host in groups['jupyter_hub'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
     {%- endif -%}
     {%- if groups['hue_server'] is defined and groups['hue_server'] | length > 0 -%}
       { "name": "{{ postgresql_hue_database }}", "owner": "{{ postgresql_hue_user }}", "hba_addresses": [ {% for host in groups['hue_server'] %}{% if hostvars[host][postgresql_generated_hba_address_hostvars_key] is defined %}"{{ hostvars[host][postgresql_generated_hba_address_hostvars_key] }}/32",{% else %}"",{% endif %}{% endfor %} ] },
