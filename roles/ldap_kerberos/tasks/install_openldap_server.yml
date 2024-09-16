@@ -51,6 +51,15 @@
     mode: "0644"
   notify: restart slapd
 
+- name: Configure slapd_password.conf
+  template:
+    src: slapd_password.conf.j2
+    dest: /etc/openldap/slapd_password.conf
+    owner: ldap
+    group: ldap
+    mode: "0600"
+  notify: restart slapd
+
 - name: Configure /etc/sysconfig/slapd
   template:
     src: sysconfig-slapd.j2

@@ -17,7 +17,8 @@ access to *
 database bdb
 suffix "{{ ldap_suffix }}"
 rootdn "{{ ldap_rootdn }}"
-rootpw {{ ldap_rootpw }}
+# rootpw
+include /etc/openldap/slapd_password.conf
 directory {{ ldapdb_dir }}
 sizelimit unlimited
 index objectClass,uid,mail,cn eq,pres
