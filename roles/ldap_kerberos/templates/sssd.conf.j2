@@ -11,8 +11,8 @@ chpass_provider = ldap
 cache_credentials = True
 ldap_uri = ldap://{{ ldap_server }}
 ldap_search_base = {{ ldap_suffix }}
-ldap_user_search_base = ou=users,{{ ldap_suffix }}
-ldap_group_search_base = ou=groups,{{ ldap_suffix }}
+ldap_user_search_base = {{ ldap_users_base }}
+ldap_group_search_base = {{ ldap_groups_base }}
 ldap_default_bind_dn = {{ ldap_admin_dn }}
 ldap_default_authtok = {{ ldap_admin_dn_password }}
 sudo_provider = none
