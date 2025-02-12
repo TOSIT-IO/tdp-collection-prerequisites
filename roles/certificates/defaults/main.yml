@@ -26,4 +26,4 @@ certificates_cert_key_usage:
 
 certificates_cert_subject_alt_names:
   - "DNS:{{ hostname }}.{{ domain }}"
-  - "IP:{{ ip }}"
+  - "IP:{{ ip | default(ansible_default_ipv4.address) }}"
