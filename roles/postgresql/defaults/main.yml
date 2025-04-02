@@ -13,7 +13,7 @@ proxy_env:
 postgresql_use_public_repo: yes
 postgresql_public_repo_rpm_url: "https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ansible_distribution_major_version }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 
-postgresql_version: 12
+postgresql_version: 17
 
 postgresql_default_packages:
   common:
