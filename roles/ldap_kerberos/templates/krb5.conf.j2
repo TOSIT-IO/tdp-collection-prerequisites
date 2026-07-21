@@ -16,7 +16,7 @@ includedir /etc/krb5.conf.d/
   default_ccache_name = /tmp/krb5cc_%{uid}
   default_client_keytab_name = /home/%{username}/%{username}.keytab
   canonicalize = true
-  dns_canonicalize_hostname = {{ kerberos_dns_canonicalize | lower }}
+  dns_canonicalize_hostname = {{ kerberos_dns_canonicalize_hostname | lower }}
 
 [realms]
   {{ realm }} = {
