@@ -59,6 +59,7 @@
     group: ldap
     mode: "0600"
   notify: restart slapd
+  no_log: "{{ tdp_no_log is not defined or tdp_no_log }}"
 
 - name: Configure /etc/sysconfig/slapd
   template:

@@ -28,6 +28,7 @@
     dest: /etc/sssd/sssd.conf
     mode: 0600
   notify: restart sssd
+  no_log: "{{ tdp_no_log is not defined or tdp_no_log }}"
 
 - block:
     - name: Check authconfig state
